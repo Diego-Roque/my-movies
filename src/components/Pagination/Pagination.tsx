@@ -15,7 +15,6 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         let start = Math.max(1, currentPage - Math.floor(displayedPages / 2));
         const end = Math.min(totalPages, start + displayedPages - 1);
 
-        // Adjust start if we're near the end
         if (end === totalPages) {
             start = Math.max(1, end - displayedPages + 1);
         }
@@ -29,13 +28,13 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
 
     return (
         <nav className="flex justify-center mt-8 mb-4">
-            <ul className="flex space-x-1">
+            <ul className="flex flex-wrap items-center justify-center gap-1 overflow-auto max-w-full px-2">
                 {/* Previous button */}
                 <li>
                     <button
                         onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className={`px-4 py-2 rounded-md ${
+                        className={`px-3 py-1 rounded-md text-sm ${
                             currentPage === 1
                                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                                 : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -51,25 +50,25 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                         <li>
                             <button
                                 onClick={() => onPageChange(1)}
-                                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md"
+                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md text-sm"
                             >
                                 1
                             </button>
                         </li>
                         {getPageNumbers()[0] > 2 && (
                             <li>
-                                <span className="px-3 py-2 text-gray-500">...</span>
+                                <span className="px-2 py-1 text-gray-500 text-sm">...</span>
                             </li>
                         )}
                     </>
                 )}
 
                 {/* Page numbers */}
-                {getPageNumbers().map(page => (
+                {getPageNumbers().map((page) => (
                     <li key={page}>
                         <button
                             onClick={() => onPageChange(page)}
-                            className={`px-4 py-2 rounded-md ${
+                            className={`px-3 py-1 rounded-md text-sm ${
                                 currentPage === page
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -85,13 +84,13 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     <>
                         {getPageNumbers()[getPageNumbers().length - 1] < totalPages - 1 && (
                             <li>
-                                <span className="px-3 py-2 text-gray-500">...</span>
+                                <span className="px-2 py-1 text-gray-500 text-sm">...</span>
                             </li>
                         )}
                         <li>
                             <button
                                 onClick={() => onPageChange(totalPages)}
-                                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md"
+                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md text-sm"
                             >
                                 {totalPages}
                             </button>
@@ -104,7 +103,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     <button
                         onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className={`px-4 py-2 rounded-md ${
+                        className={`px-3 py-1 rounded-md text-sm ${
                             currentPage === totalPages
                                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                                 : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
