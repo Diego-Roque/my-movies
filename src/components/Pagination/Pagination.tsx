@@ -13,7 +13,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         const displayedPages = 5; // How many page numbers to show
 
         let start = Math.max(1, currentPage - Math.floor(displayedPages / 2));
-        let end = Math.min(totalPages, start + displayedPages - 1);
+        const end = Math.min(totalPages, start + displayedPages - 1);
 
         // Adjust start if we're near the end
         if (end === totalPages) {

@@ -1,15 +1,25 @@
-import api from "../api"
+import api from "../api";
+import { IMovieDetail } from "@/types/IMovieDetail";
+import axios from "axios";
 
-export const getTopRatedMovies = async (page: number = 1) => {
-    let res: any;
-    const endpoint = `/movie/top_rated?language=en-US&page=${page}`;
-    await api
-        .get(endpoint)
-        .then((d) =>{
-            res = d.data
-        })
-        .catch((err) =>{
-            res = err.response;
-        });
-    return res;
+interface MovieResponse {
+    page: number;
+    results: IMovieDetail[];
+    total_pages: number;
+    total_results: number;
 }
+
+export const getTopRatedMovies = async (page: number = 1): Promise<MovieResponse> => {
+    try {
+        const response = await api.get<MovieResponse>(`/movie/top_rated?language=en-US&page=${page}`);
+        return response.data;
+    } catch (err: unknown) {
+        if (axios.isAxiosError(err) && err.response) {
+            console.error("Error fetching top-rated movies:", err.response.data);
+            throw err.response.data;
+        } else {
+            console.error("Network or unexpected error:", err);
+            throw new Error("Network error");
+        }
+    }
+};

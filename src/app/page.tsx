@@ -40,7 +40,10 @@ const Home = () => {
             }
         };
 
-        fetchMovies();
+        // Immediately Invoked Async Function (IIAF)
+        (async () => {
+            await fetchMovies();
+        })();
     }, []);
 
     if (loading) return <div className="text-center py-10">Loading movies...</div>;

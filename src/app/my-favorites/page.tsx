@@ -5,35 +5,45 @@ import MovieCard from "@/components/MovieCard/MovieCard";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+
+interface FavoriteMovie {
+  id: number;
+  title: string;
+  vote_average?: number;
+  poster_path: string;
+  releaseYear: number;
+  overview: string;
+}
+
 const MyFavoritesPage = () => {
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<FavoriteMovie[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     loadFavorites();
   }, []);
 
+  // Cargar películas favoritas del localStorage
   const loadFavorites = () => {
     try {
-      if (typeof window !== 'undefined') {
-        const storedFavorites = localStorage.getItem("favoriteMovies");
-        const favoriteMovies = storedFavorites ? JSON.parse(storedFavorites) : [];
-        setMovies(favoriteMovies);
-      }
+      const storedFavorites = localStorage.getItem("favoriteMovies");
+      const favoriteMovies: FavoriteMovie[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+      setMovies(favoriteMovies);
     } catch (error) {
       console.error("Error loading favorites:", error);
       setMovies([]);
     }
   };
 
+  // Eliminar película favorita
   const removeFavorite = (id: number, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
 
     try {
       const storedFavorites = localStorage.getItem("favoriteMovies");
-      const favoriteMovies = storedFavorites ? JSON.parse(storedFavorites) : [];
-      const updatedFavorites = favoriteMovies.filter((fav: any) => fav.id !== id);
+      const favoriteMovies: FavoriteMovie[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+      const updatedFavorites = favoriteMovies.filter((fav) => fav.id !== id);
       localStorage.setItem("favoriteMovies", JSON.stringify(updatedFavorites));
       setMovies(updatedFavorites);
     } catch (error) {
@@ -68,10 +78,10 @@ const MyFavoritesPage = () => {
                       <div className="transition-transform transform hover:scale-105 rounded-lg overflow-hidden shadow-lg">
                         <MovieCard
                             title={movie.title}
-                            voteAverage={movie.voteAverage}
-                            posterPath={movie.posterPath}
+                            voteAverage={movie.vote_average}
+                            posterPath={movie.poster_path}
                             releaseYear={movie.releaseYear}
-                            description={movie.description}
+                            description={movie.overview}
                         />
                       </div>
                     </Link>

@@ -3,7 +3,7 @@ export interface IMovieDetail {
     backdrop_path: string;
     belongs_to_collection: BelongsToCollection;
     budget: number;
-    genres: Genre[];
+    genres?: { name: string }[];
     homepage: string;
     id: number;
     imdb_id: string;
@@ -32,11 +32,6 @@ interface BelongsToCollection {
     name: string;
     poster_path: string;
     backdrop_path: string;
-}
-
-interface Genre {
-    id: number;
-    name: string;
 }
 
 interface ProductionCompany {

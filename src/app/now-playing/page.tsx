@@ -1,38 +1,43 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { getNowPlayingMovies } from "@/services/movies/getNowPlayingMovies";
 import MovieCard from "@/components/MovieCard/MovieCard";
 import Pagination from "@/components/Pagination/Pagination";
 import { useRouter } from "next/navigation";
+import { IMovieDetail } from "@/types/IMovieDetail";
 
 const NowPlayingClientPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [movies, setMovies] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [movies, setMovies] = useState<IMovieDetail[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const router = useRouter();
 
-  useEffect(() => {
-    fetchMovies();
-  }, [currentPage]);
-
-  const fetchMovies = async () => {
+  // Optimized fetchMovies with useCallback
+  const fetchMovies = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getNowPlayingMovies(currentPage);
       setMovies(data.results);
-      setTotalPages(Math.min(data.total_pages, 500)); // API tiene un límite de 500 páginas
+      setTotalPages(Math.min(data.total_pages, 500)); // API limit of 500 pages
     } catch (err) {
       console.error("Error loading movies: ", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  // Effect to fetch movies with a properly handled promise
+  useEffect(() => {
+    (async () => {
+      await fetchMovies();
+    })();
+  }, [fetchMovies]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const navigateToMovie = (id: number) => {

@@ -1,35 +1,34 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { IMovieDetail } from "@/types/IMovieDetail";
 import Image from "next/image";
 import { getMovieById } from "@/services/movies/getMovieById";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { getMovieRecommendationsById } from "@/services/movies/getMovieRecommendations";
 import Link from "next/link";
 import MovieCard from "@/components/MovieCard/MovieCard";
 
+interface FavoriteMovie {
+  id: number;
+  title: string;
+  vote_average: number;
+  poster_path: string;
+  release_date: string;
+  overview: string;
+  genres?: { name: string }[];
+}
+
 const MovieDetailPage = () => {
   const params = useParams();
   const id = params.id as string;
-  const router = useRouter();
+
   const [movie, setMovie] = useState<IMovieDetail | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [recommendations, setRecommendations] = useState<IMovieDetail[]>([]);
 
-  useEffect(() => {
-    if (!id) return;
-    fetchMovie();
-  }, [id]);
-
-  useEffect(() => {
-    if (movie) {
-      checkIfFavorite();
-    }
-  }, [movie, id]);
-
-  const fetchMovie = async () => {
+  const fetchMovie = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getMovieById(id);
@@ -42,41 +41,71 @@ const MovieDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const checkIfFavorite = () => {
+  const checkIfFavorite = useCallback(() => {
     try {
       const storedFavorites = localStorage.getItem("favoriteMovies");
-      const favoriteMovies = storedFavorites ? JSON.parse(storedFavorites) : [];
-      setIsFavorite(favoriteMovies.some((fav: any) => fav.id === Number(id)));
+      const favoriteMovies: FavoriteMovie[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+      setIsFavorite(favoriteMovies.some((fav) => fav.id === Number(id)));
     } catch (error) {
       console.error("Error checking favorite status:", error);
     }
-  };
+  }, [id]);
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = useCallback(() => {
     if (!movie) return;
 
     try {
       const storedFavorites = localStorage.getItem("favoriteMovies");
-      const favoriteMovies = storedFavorites ? JSON.parse(storedFavorites) : [];
+      const favoriteMovies: FavoriteMovie[] = storedFavorites ? JSON.parse(storedFavorites) : [];
 
       if (isFavorite) {
-        const updatedFavorites = favoriteMovies.filter((fav: any) => fav.id !== movie.id);
+        const updatedFavorites = favoriteMovies.filter((fav) => fav.id !== movie.id);
         localStorage.setItem("favoriteMovies", JSON.stringify(updatedFavorites));
       } else {
-        favoriteMovies.push(movie);
+        const newFavorite: FavoriteMovie = {
+          id: movie.id,
+          title: movie.title,
+          vote_average: movie.vote_average,
+          poster_path: movie.poster_path,
+          release_date: movie.release_date,
+          overview: movie.overview,
+          genres: movie.genres,
+        };
+        favoriteMovies.push(newFavorite);
         localStorage.setItem("favoriteMovies", JSON.stringify(favoriteMovies));
       }
 
-      setIsFavorite(!isFavorite);
+      setIsFavorite((prev) => !prev);
     } catch (error) {
       console.error("Error updating favorites:", error);
     }
-  };
+  }, [movie, isFavorite]);
 
-  if (loading) return <div className="text-center py-10">Loading movie...</div>;
-  if (!movie) return <div className="text-center py-10">No movie found.</div>;
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        await fetchMovie();
+      })();
+    }
+  }, [fetchMovie, id]);
+
+
+
+  useEffect(() => {
+    if (movie) {
+      checkIfFavorite();
+    }
+  }, [movie, checkIfFavorite]);
+
+  if (loading) {
+    return <div className="text-center py-10">Loading movie details...</div>;
+  }
+
+  if (!movie) {
+    return <div className="text-center py-10">No movie found.</div>;
+  }
 
   return (
       <div className="max-w-7xl mx-auto p-4 space-y-8">
@@ -96,36 +125,34 @@ const MovieDetailPage = () => {
           {/* Movie Information */}
           <div className="flex flex-col flex-1 space-y-4">
             <h1 className="text-3xl md:text-4xl font-bold">{movie.title}</h1>
-            <p className="text-gray-500 italic">{movie.tagline}</p>
+            {movie.tagline && <p className="text-gray-500 italic">{movie.tagline}</p>}
             <p className="text-gray-700">{movie.overview}</p>
 
-            <div className="flex flex-wrap gap-4">
-              <div><strong>Genres:</strong> {movie.genres.map((g) => g.name).join(", ")}</div>
+            <div className="flex flex-wrap gap-4 mt-4">
+              <div><strong>Genres:</strong> {movie.genres?.map((g) => g.name).join(", ")}</div>
               <div><strong>Release:</strong> {movie.release_date}</div>
               <div><strong>Rating:</strong> <span className="text-yellow-500">{movie.vote_average.toFixed(1)}</span></div>
             </div>
 
             {/* Favorite Button */}
-            <div className="flex space-x-4 mt-4">
-              <button
-                  onClick={handleToggleFavorite}
-                  className={`px-4 py-2 rounded-md text-white font-bold transition-transform transform hover:scale-105 ${
-                      isFavorite ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
-                  }`}
-              >
-                {isFavorite ? "Eliminar de Favoritos" : "Añadir a Favoritos"}
-              </button>
-            </div>
+            <button
+                onClick={handleToggleFavorite}
+                className={`px-4 py-2 rounded-md text-white font-bold transition-transform transform hover:scale-105 ${
+                    isFavorite ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+                }`}
+            >
+              {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+            </button>
           </div>
         </div>
 
         {/* Recommended Movies */}
         <div className="mt-10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Películas Recomendadas</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Recommended Movies</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {recommendations.length > 0 ? (
                 recommendations.slice(0, 10).map((rec) => (
-                    <Link key={rec.id} href={`/movie/${rec.id}`} className="block transition-transform transform hover:scale-105">
+                    <Link key={rec.id} href={`/movie/${rec.id}`}>
                       <MovieCard
                           title={rec.title}
                           voteAverage={rec.vote_average}
@@ -136,7 +163,7 @@ const MovieDetailPage = () => {
                     </Link>
                 ))
             ) : (
-                <p className="text-center col-span-full text-gray-500">No hay recomendaciones disponibles.</p>
+                <p className="text-center col-span-full text-gray-500">No recommendations available.</p>
             )}
           </div>
         </div>

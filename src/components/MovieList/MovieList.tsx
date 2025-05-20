@@ -1,6 +1,6 @@
 import Link from "next/link";
 import MovieCard from "../MovieCard/MovieCard";
-import { IMovieDetail } from "../../types/IMovieDetail";
+import { IMovieDetail } from "@/types/IMovieDetail";
 
 interface MovieProps {
     movies: IMovieDetail[]
