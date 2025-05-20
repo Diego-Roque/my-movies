@@ -11,7 +11,7 @@ interface FavoriteMovie {
   title: string;
   vote_average?: number;
   poster_path: string;
-  releaseYear: number;
+  release_date: number;
   overview: string;
 }
 
@@ -80,7 +80,7 @@ const MyFavoritesPage = () => {
                             title={movie.title}
                             voteAverage={movie.vote_average}
                             posterPath={movie.poster_path}
-                            releaseYear={movie.releaseYear}
+                            releaseYear={movie.release_date}
                             description={movie.overview}
                         />
                       </div>

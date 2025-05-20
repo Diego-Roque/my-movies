@@ -34,8 +34,8 @@ const Header = () => {
                 isScrolled ? "bg-white shadow-md py-2" : "bg-white/90 backdrop-blur-sm py-4"
             )}
         >
-            <div className='container mx-auto flex items-center justify-between px-4'>
-                <Link href="/" className='flex items-center'>
+            <div className='container mx-auto flex items-center justify-between px-4 '>
+                <Link href="/" className='flex items-center text-green-500'>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -44,7 +44,7 @@ const Header = () => {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="w-8 h-8 text-blue-600 mr-2"
+                        className="w-8 h-8 text-blue-500 mr-2"
                     >
                         <path d="M19.82 2H4.18C2.97 2 2 2.97 2 4.18v15.64C2 21.03 2.97 22 4.18 22h15.64c1.21 0 2.18-.97 2.18-2.18V4.18C22 2.97 21.03 2 19.82 2z" />
                         <path d="M7 2v20" />
@@ -55,12 +55,12 @@ const Header = () => {
                         <path d="M17 17h5" />
                         <path d="M17 7h5" />
                     </svg>
-                    <span className='text-xl font-bold text-gray-800 hover:text-blue-600 transition-colors'>
-            PelisXD
+                    <span className='text-xl font-bold text-gray-800 hover:text-blue-500 transition-colors'>
+            DR <span className={"text-blue-500"}>Movies</span>
           </span>
                 </Link>
 
-                {/* Mobile menu button */}
+
                 <button
                     className="md:hidden focus:outline-none"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
