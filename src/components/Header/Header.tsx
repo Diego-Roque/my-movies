@@ -56,7 +56,7 @@ const Header = () => {
                         <path d="M17 7h5" />
                     </svg>
                     <span className='text-xl font-bold text-gray-800 hover:text-blue-500 transition-colors'>
-            DR <span className={"text-blue-500"}>Movies</span>
+            DR <span className={"text-blue-500 hover:text-black"}>Movies</span>
           </span>
                 </Link>
 
